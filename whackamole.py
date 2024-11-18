@@ -1,7 +1,17 @@
 import pygame
 import random
 
-# make a comment
+def reset_screen(screen):
+    screen.fill("light green")
+    i = 32
+    while i < 640:
+        pygame.draw.line(screen, "dark blue", (i, 0), (i, 512))
+        i += 32
+    i = 32
+    while i < 512:
+        pygame.draw.line(screen, "dark blue", (0, i), (640, i))
+        i += 32
+
 def main():
     try:
         pygame.init()
@@ -11,17 +21,25 @@ def main():
         screen = pygame.display.set_mode((640, 512))
         clock = pygame.time.Clock()
         running = True
+        reset_screen(screen)
+        screen.blit(mole_image, mole_image.get_rect(topleft=(0, 0)))
+        mole_coor = (0, 0)
         while running:
+            pygame.display.flip()
+            clock.tick(60)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    print(event.pos)
-            screen.fill("light green")
-            screen.blit(mole_image, mole_image.get_rect(topleft=(0, 0)))
-            pygame.draw.line(screen, "dark blue", (32, 0), (32, 512))
-            pygame.display.flip()
-            clock.tick(60)
+                    x, y = event.pos
+                    col = x-x%32
+                    row = y-y%32
+                    if (col,row) == mole_coor:
+                        reset_screen(screen)
+                        random_x = random.randrange(0, 640)
+                        random_y = random.randrange(0, 512)
+                        screen.blit(mole_image, mole_image.get_rect(topleft=((random_x - random_x%32), random_y - random_y%32)))
+                        mole_coor = ((random_x - random_x%32),(random_y - random_y%32))
     finally:
         pygame.quit()
 
